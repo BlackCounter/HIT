@@ -1,0 +1,3 @@
+https://computingforgeeks.com/using-letsencrypt-wildcard-certificate-nginx-apache/
+
+create nginx encryption ssl by certbot you need add plugin and txt record to dns.
