@@ -1,0 +1,5 @@
+https://howtodoinjava.com/devops/docker-memory-and-cpu-limits/
+
+sudo docker stats web-server --no-stream --format "{{json .}}" | python3 -m json.tool
+
+command json stats output....
