@@ -6,6 +6,13 @@ https://stackoverflow.com/questions/65594625/configure-haproxy-ingress-on-k8s-v1
 #### monorepo cicd
 
 https://how-to.dev/how-to-set-up-monorepo-build-in-gitlab-ci
+https://www.bam.tech/article/set-up-a-gitlab-ci-cd-for-react-or-react-native-monorepo
+
+https://stackoverflow.com/questions/68674148/gitlab-ci-parent-child-pipelines-with-complex-subfolders
+
+
+### downstream pipelines
+https://docs.gitlab.com/ee/ci/pipelines/downstream_pipelines.html
 
 
 ###### install kubernetes nodeport in haproxy 
