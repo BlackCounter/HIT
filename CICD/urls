@@ -4,6 +4,9 @@ https://stackoverflow.com/questions/65594625/configure-haproxy-ingress-on-k8s-v1
 
 
 
+###### install kubernetes nodeport in haproxy 
+https://itnext.io/bare-metal-kubernetes-with-kubeadm-nginx-ingress-controller-and-haproxy-bb0a7ef29d4e
+
 https://www.linkedin.com/pulse/cicd-pipeline-master-slave-cluster-dynamic-slave-kunal-maheshwari/
 
 
