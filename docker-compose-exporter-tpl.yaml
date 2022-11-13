@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+
+  node_monitor:
+    image: prom/node-exporter:v1.4.0
+    container_name: node_exporter
+    volumes:
+      - '/:/host:ro,rslave'
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    restart: unless-stopped
+    ports:
+      - 9000:9100
+
+  cadvisor_monitor:
+    image: gcr.io/cadvisor/cadvisor:v0.43.0
+    container_name: "cadvisor"
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    ports:
+      - 9001:8080
+    devices:
+      - /dev/kmsg
+    restart: always
+
+networks:
+  default:
+    external:
+      name: test
