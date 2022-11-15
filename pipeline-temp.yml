@@ -1,0 +1,42 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - stage
+parameters:
+- name: deploy
+  displayName: Deploy
+  type: boolean
+  default: false
+  values:
+  - false
+  - true
+resources:
+  repositories:
+  - repository: PipelineTepmplates
+    type: git
+    name: Hastim/HIT.Hastim.Pipeline.Template
+extends:
+  template: core-yaml.yml@PipelineTepmplates
+  parameters:
+    agentName: Farid
+    project: Hastim
+    repo: HIT.Hastim.Accounting
+    dockerRegistry: docker.hasti.co
+    deploy: ${{ parameters.deploy }}
+    projects:
+    - service_name: Accounting_AppApi
+      csproj_file: src/03.Endpoints/HIT.Hastim.Accounting.Endpoints.AppApi/HIT.Hastim.Accounting.Endpoints.AppApi.csproj
+      appsettings_dir: src/03.Endpoints/HIT.Hastim.Accounting.Endpoints.AppApi
+      project_path: src/03.Endpoints/HIT.Hastim.Accounting.Endpoints.AppApi
+      name: HIT.Hastim.Accounting.Endpoints.AppApi
+    - service_name: Accounting_AdminApi
+      csproj_file: src/03.Endpoints/HIT.Hastim.Accounting.Endpoints.AdminApi/HIT.Hastim.Accounting.Endpoints.AdminApi.csproj
+      appsettings_dir: src/03.Endpoints/HIT.Hastim.Accounting.Endpoints.AdminApi
+      project_path: src/03.Endpoints/HIT.Hastim.Accounting.Endpoints.AdminApi
+      name: HIT.Hastim.Accounting.Endpoints.AdminApi
+    - service_name: Accounting_WebApi
+      csproj_file: src/03.Endpoints/HIT.Hastim.Accounting.EndPoints.WebApi/HIT.Hastim.Accounting.Endpoints.WebApi.csproj
+      appsettings_dir: src/03.Endpoints/HIT.Hastim.Accounting.EndPoints.WebApi
+      project_path: src/03.Endpoints/HIT.Hastim.Accounting.EndPoints.WebApi
+      name: HIT.Hastim.Accounting.Endpoints.WebApi
