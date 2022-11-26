@@ -1,0 +1,2 @@
+certs$ ls
+nginx_bundle.crt  privkey.pem
