@@ -1,0 +1,11 @@
+maps$ cat stage.conf 
+map $http_host $backend {
+    dartiladmin.hasti.co            admin;
+    dartil.hasti.co                 commerce;
+    dartiladmingateway.hasti.co     gateway_admin;
+    dartilappgateway.hasti.co       gateway_app;
+    dartilwebgateway.hasti.co       gateway_web;
+    #dartilpayment.hasti.co          payment_webapi;
+    dartilids.hasti.co              identityservice;
+    #dartilstorybook.hasti.co        storybook;
+    #dartilvendor.hasti.co           vendor;
