@@ -1,0 +1,432 @@
+cat dartil.yml 
+version: "3.8"
+# x-service-placement: &placement_defaults
+#   deploy:
+#     placement:
+#         constraints:
+#             - node.labels.stage==true
+x-service-timezone: &timezone_defaults
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+  environment:
+    TZ: Asia/Tehran
+
+x-service_defaults: &service_defaults
+    << : *timezone_defaults
+    # expose:
+    #   - "80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=test
+      - Sentry__Dsn=
+      - Sentry__Debug=true
+      - Messaging__ZipkinEndpoint=
+#    healthcheck:
+#      test: curl --fail http://localhost/hc/ready || exit 1
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+#      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "3"
+    # logging:
+    #   driver: syslog
+    #   options:
+    #     syslog-address: "tcp://192.168.0.42:123"
+    sysctls:
+      net.core.somaxconn: 1024
+      net.ipv4.tcp_syncookies: 0
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+    deploy:
+      mode: replicated
+      replicas: 1
+#      resources:
+#        limits:
+#          cpus: '0.50'
+#          memory: 1G
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 50
+        window: 120s
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        monitor: 30s
+        max_failure_ratio: 0.3
+        order: start-first
+
+services:
+    identityservice:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/identityservice:stage
+
+
+    wallet_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/wallet_appapi:stage
+
+
+    wallet_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/wallet_adminapi:stage
+
+
+    wallet_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/wallet_webapi:stage
+
+
+    accounting_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/accounting_appapi:stage
+
+
+    accounting_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/accounting_adminapi:stage
+
+
+    accounting_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/accounting_webapi:stage
+
+
+    payment_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/payment_webapi:stage
+
+
+    payment_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/payment_appapi:stage
+
+
+    payment_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/payment_adminapi:stage
+
+
+    cms_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/cms_appapi:stage
+
+
+    cms_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/cms_adminapi:stage
+
+
+    cms_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/cms_webapi:stage
+
+
+    gateway_web:
+        << : *service_defaults
+        environment:
+          ServerOcelot: "https://dartilwebgateway.hasti.co/"
+        env_file: /dartil/envs/ocelot_web.env
+        image: docker.hasti.co/hastim/gateway_web:stage
+
+
+    report_adminapi:
+       << : *service_defaults
+       image: docker.hasti.co/hastim/report_adminapi:stage
+
+
+    report_appapi:
+       << : *service_defaults
+       image: docker.hasti.co/hastim/report_appapi:stage
+
+
+    report_webapi:
+       << : *service_defaults
+       image: docker.hasti.co/hastim/report_webapi:stage
+
+
+    crm_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/crm_adminapi:stage
+
+
+    crm_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/crm_appapi:stage
+
+
+    crm_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/crm_webapi:stage
+
+
+    audit_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/audit_adminapi:stage
+
+
+    locality_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/locality_adminapi:stage
+
+
+    locality_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/locality_webapi:stage
+
+
+    locality_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/locality_appapi:stage
+
+
+    gateway_app:
+        << : *service_defaults
+        environment:
+          ServerOcelot: "https://dartilappgateway.hasti.co/"
+        env_file: /dartil/envs/ocelot_app.env
+        image: docker.hasti.co/hastim/gateway_app:stage
+
+
+    catalog_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/catalog_appapi:stage
+
+
+    catalog_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/catalog_webapi:stage
+
+
+    catalog_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/catalog_adminapi:stage
+
+
+    social_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/social_adminapi:stage
+
+
+    social_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/social_webapi:stage
+
+
+    social_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/social_appapi:stage
+
+
+    social_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/social_appapi:stage
+
+
+    gateway_admin:
+        << : *service_defaults
+        environment:
+          ServerOcelot: "https://dartiladmingateway.hasti.co"
+        env_file: /dartil/envs/ocelot_admin.env
+        image: docker.hasti.co/hastim/gateway_admin:stage
+
+
+    notification_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/notification_adminapi:stage
+
+
+    notification_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/notification_appapi:stage
+
+
+    notification_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/notification_webapi:stage
+
+
+    sale_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/sale_adminapi:stage
+
+
+    sale_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/sale_appapi:stage
+
+
+    sale_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/sale_webapi:stage
+
+
+    idr_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/idr_webapi:stage
+
+
+    idr_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/idr_appapi:stage
+
+
+    idr_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/idr_adminapi:stage
+
+
+    statemachine_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/statemachine_webapi:stage
+
+
+    generaldata_adminapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/generaldata_adminapi:stage
+
+
+    generaldata_webapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/generaldata_webapi:stage
+
+
+    generaldata_appapi:
+        << : *service_defaults
+        image: docker.hasti.co/hastim/generaldata_appapi:stage
+
+    # -----------------  FrontEnds ----------------
+    commerce:
+        << : *service_defaults
+        image: docker.hasti.co/frontend/commerce-deploy:stage
+    admin:
+        << : *service_defaults
+        image: docker.hasti.co/frontend/admin-deploy:stage
+#    vendor:
+#        << : *service_defaults
+#        image: docker.hasti.co/hastim/vendor-deploy:latest
+    # -----------------  services -----------------
+    mssql:
+      << : *timezone_defaults
+      # << : *placement_defaults
+      image: mcr.microsoft.com/mssql/server:2022-latest
+      environment:
+        MSSQL_SA_PASSWORD: 'wgqyZ4yV2zznTH89KYQsTuAwDW37UJkm'
+        ACCEPT_EULA: 'Y'
+      ports:
+        - '1433:1433'
+      volumes:
+        - /dartil/mssql-data:/var/opt/mssql
+        - /dartil/mssql-backup:/backup
+    mongo:
+      << : *timezone_defaults
+      # << : *placement_defaults
+      image: docker.frox.ir/library/mongo
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: hasti
+        MONGO_INITDB_ROOT_PASSWORD: Ika43NatY4kp7MCgn4B9QRuU38zMT9PD
+      volumes:
+        - /dartil/mongo-data:/data/db
+        - /dartil/mongo-backup:/backup
+      ports:
+        - '27017:27017'
+    rabbitmq:
+      << : *timezone_defaults
+      # << : *placement_defaults
+      image: docker.frox.ir/library/rabbitmq:3-management-alpine
+      ports:
+          - 5672:5672
+          - 15672:15672
+      volumes:
+          - /dartil/rabbitmq:/var/lib/rabbitmq/
+      environment:
+        - RABBITMQ_DEFAULT_USER=hasti
+        - RABBITMQ_DEFAULT_PASS=RFuDJWbthKw6NemD8SHJ6hta6drK7AQH
+    redis:
+      << : *timezone_defaults
+      # << : *placement_defaults
+      image: docker.frox.ir/library/redis:alpine
+      ports:
+        - '6379:6379'
+      command: redis-server --save 20 1 --loglevel warning --requirepass wsVLtVwRTaTfvfE4LHygqtapH838Fykx
+      volumes:
+        - /dartil/redis:/data
+    elasticsearch:
+      << : *timezone_defaults
+      # << : *placement_defaults
+      image: docker.frox.ir/library/elasticsearch:7.17.6
+      environment:
+        - bootstrap.memory_lock=true
+        - discovery.type=single-node
+        - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+        - ELASTIC_PASSWORD=pDTE2QqT5nhXjRK9K5GX8Qd45HdPMFSd
+        - xpack.security.enabled=true
+      ulimits:
+        memlock:
+          soft: -1
+          hard: -1
+      volumes:
+        - /dartil/elasticsearch:/usr/share/elasticsearch/data
+      ports:
+        - 9200:9200
+        - 9300:9300
+    kibana:
+      << : *timezone_defaults
+      # << : *placement_defaults
+      image: docker.frox.ir/library/kibana:7.17.6
+      ports:
+        - 5601:5601
+      environment:
+        ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+        ELASTICSEARCH_USERNAME: elastic
+      depends_on:
+        - elasticsearch
+    ftp:
+      << : *timezone_defaults
+      # << : *placement_defaults
+      image: docker.frox.ir/fauria/vsftpd
+      ports:
+        - "121:21"
+        - "120:20"
+        - 21100-21110:21100-21110
+      volumes:
+        - /dartil/ftp:/home/vsftpd
+      environment:
+        - FTP_USER=hasti
+        - FTP_PASS=K9Y4p8Y4p8Y4p8Y4p8Y4p8Y4p8Y4p8Y4
+        - PASV_ADDRESS=127.0.0.1
+        - PASV_MIN_PORT=21100
+        - PASV_MAX_PORT=21110
+        # - FILE_OPEN_MODE=666
+        - LOCAL_UMASK=033
+    nginx:
+      << : *timezone_defaults
+      image: docker.frox.ir/library/nginx:1.21.3-alpine
+      volumes:
+        - /dartil/nginx/conf.d:/etc/nginx/conf.d
+        - /dartil/nginx/certs:/etc/nginx/certs
+        - /dartil/nginx/maps:/etc/nginx/maps
+        - /dartil/nginx/upstreams:/etc/nginx/upstreams
+        - /dartil/ftp/hasti:/cdn
+      ports:
+        - 80:80
+        - 443:443
+    # fluentd:
+    #   image: docker.frox.ir/library/fluentd:1.14.2
+    #   volumes:
+    #     - /dartil/fluentd:/fluentd/etc
+    #     - /dartil/fluentd/log:/fluentd/log
+    #     - /dartil/fluentd/log:/var/log
+
+
