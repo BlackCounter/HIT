@@ -1,0 +1,12 @@
+into local system : 
+
+1: ssh memariani@172.31.52.37 -N -f -L 1433:172.31.52.37:1433
+
+2: mssql management  be localhost:"1433 bezan be sql server e roo server vasl mishi
+
+3: ./sqlcmd -U sa -P 'wgqyZ4yV2zznTH89KYQsTuAwDW37UJkm' 
+          -q   "RESTORE DATABASE [QAIdentityServerDb] FROM DISK = N'/backup/QAIdentityServerDb.bak' WITH RECOVERY, 
+          MOVE "QAIdentityServerDb" TO N '/var/opt/mssql/data/QAIdentityServerDb.mdf', 
+          MOVE 'QAIdentityServerDb_log' TO N'/var/opt/mssql/data/QAIdentityServerDb_log.ldf'"
+
+
