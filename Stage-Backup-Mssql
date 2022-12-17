@@ -4,9 +4,6 @@ into local system :
 
 2: mssql management  be localhost:"1433 bezan be sql server e roo server vasl mishi
 
-3: ./sqlcmd -U sa -P 'wgqyZ4yV2zznTH89KYQsTuAwDW37UJkm' 
-          -q   "RESTORE DATABASE [QAIdentityServerDb] FROM DISK = N'/backup/QAIdentityServerDb.bak' WITH RECOVERY, 
-          MOVE "QAIdentityServerDb" TO N '/var/opt/mssql/data/QAIdentityServerDb.mdf', 
-          MOVE 'QAIdentityServerDb_log' TO N'/var/opt/mssql/data/QAIdentityServerDb_log.ldf'"
-
-
+3: sudo ./sqlcmd -S 172.31.52.40 -U sa -P wgqyZ4yV2zznTH89KYQsTuAwDW37UJkm  -q "RESTORE DATABASE DevAccountingDb FROM DISK = N'/backup/DevAccountingDb.bak' WITH  FILE = 1,
+                                                                                MOVE N'DevAccountingDb' TO N'/var/opt/mssql/data/DevAccountingDb.mdf', 
+                                                                                MOVE 'DevAccountingDb_log' TO N'/var/opt/mssql/data/DevAccountingDb_log.ldf'" 
