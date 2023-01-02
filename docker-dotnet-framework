@@ -1,0 +1,115 @@
+
+
+Finally, after a week of trying, I was able to get an answer.
+
+We have to base the image on Nginx and install the mono on it.
+
+    Create a folder that contains the following:
+
+enter image description here
+
+    Publish your asp project in the dist folder.
+    In the Nginx folder create a folder with the sites-available name.
+    In the sites-available folder create a file with the default name and the following codes:
+
+    server {
+             listen   80;
+             access_log   /var/log/nginx/mono-fastcgi.log;
+             root /var/www/;
+             server_tokens off;
+             more_clear_headers Server X-AspNet-Version;
+    
+             location / {
+                     index index.html index.htm default.aspx Default.aspx;
+                     fastcgi_index /;
+                     fastcgi_pass unix:/var/run/mono-fastcgi.sock;
+                     include /etc/nginx/fastcgi_params;
+             }
+     }
+
+    In the Nginx folder create a file with the fastcgi_params name and the following codes:
+
+fastcgi_param  QUERY_STRING       $query_string;
+fastcgi_param  REQUEST_METHOD     $request_method;
+fastcgi_param  CONTENT_TYPE       $content_type;
+fastcgi_param  CONTENT_LENGTH     $content_length;
+
+fastcgi_param  SCRIPT_NAME        $fastcgi_script_name;
+fastcgi_param  REQUEST_URI        $request_uri;
+fastcgi_param  DOCUMENT_URI       $document_uri;
+fastcgi_param  DOCUMENT_ROOT      $document_root;
+fastcgi_param  SERVER_PROTOCOL    $server_protocol;
+fastcgi_param  REQUEST_SCHEME     $scheme;
+fastcgi_param  HTTPS              $https if_not_empty;
+
+fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
+fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
+
+fastcgi_param  REMOTE_ADDR        $remote_addr;
+fastcgi_param  REMOTE_PORT        $remote_port;
+fastcgi_param  SERVER_ADDR        $server_addr;
+fastcgi_param  SERVER_PORT        $server_port;
+fastcgi_param  SERVER_NAME        $server_name;
+
+fastcgi_param  PATH_INFO          "";
+fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+
+    In the pools folder create a file with the sample.webapp name and the following codes:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<apps>
+    <web-application>
+        <name>root</name>
+        <vhost>*</vhost>
+        <vport>-1</vport>
+        <vpath>/</vpath>
+        <path>/var/www/sample-app/</path>
+    </web-application>
+</apps>
+
+    supervisord.conf file:
+
+[supervisord]
+logfile=/var/log/supervisor/supervisord.log
+logfile_maxbytes = 50MB
+nodaemon=true
+user=root
+
+[program:mono]
+command=fastcgi-mono-server4 --appconfigdir=/etc/mono/pools --socket=unix --filename=/var/run/mono-fastcgi.sock --printlog --name=mono
+user=root
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+
+[program:nginx]
+command=nginx
+user=root
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+
+    Finally Dickerfile:
+
+FROM mono:latest
+
+RUN apt-get update \
+  && apt-get install -y \
+  iproute2 supervisor ca-certificates-mono fsharp mono-vbnc nuget \
+  referenceassemblies-pcl mono-fastcgi-server4 nginx nginx-extras \
+  && rm -rf /var/lib/apt/lists/* /tmp/* \
+  && echo "daemon off;" | cat - /etc/nginx/nginx.conf > temp && mv temp /etc/nginx/nginx.conf \
+  && sed -i -e 's/www-data/root/g' /etc/nginx/nginx.conf
+
+COPY nginx/ /etc/nginx/
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY pools /etc/mono/pools
+COPY dist /var/www/sample-app
+
+
+EXPOSE 80
+
+ENTRYPOINT [ "/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf" ]
+
