@@ -1,0 +1,22 @@
+1: first step using this command: 
+
+sudo certbot certonly   --agree-tos   --email bahmanabadi.s@gmail.com   --manual   --preferred-challenges=dns   -d *.sarmayexfinance.com   --server https://acme-v02.api.letsencrypt.org/directory
+
+2: second step using this command :
+
+using domain txt variable when creating ssl 
+ 
+3: third step using this command:
+
+https://linuxhint.com/create-crt-file-linux/
+
+sudo openssl req -new -key privkey.pem -out request.csr
+
+sudo openssl x509 -req -days 365 -in request.csr  -signkey privkey.pem -out bundle.crt
+
+sudo mkdir /etc/nginx/certs
+
+sudo cp -rf bundle.crt  /etc/nginx/certs/
+
+sudo cp -rf privkey.pem  /etc/nginx/certs/
+
