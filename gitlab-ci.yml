@@ -1,0 +1,43 @@
+stages:
+     - build
+     - deploy
+
+build:
+    cache: {}
+    stage: build
+    image: docker
+    variables:
+      DOCKER_DRIVER: overlay
+    services:
+      - docker:dind
+    script:
+      - docker login -u "sandbox"  -p "sandbox" nexus.sarmayexfinance.com
+#      - docker build --pull --cache-from nexus.sarmayexfinance.com/ex-api:latest -t nexus.sarmayexfinance.com/ex-api .
+#      - docker push nexus.sarmayexfinance.com/ex-api:latest
+    environment:
+      name: dev
+    tags:
+        - build
+#    rules:
+#      - if: $CI_COMMIT_BRANCH == "dev"
+  
+deploy:
+      stage: deploy
+#      when: on_success
+      variables:
+        DOCKER_HOST: ssh://docker@docker-host
+        SERVICE_NAME: ex-api
+      image: docker:latest
+      script:
+        - apk add sshpass
+        - apk add openssh
+        - apk add lftp
+        - sshpass -p \'${ssh_password}\' ssh -o 'StrictHostKeyChecking=no' stage@46.209.8.3
+        - sshpass -p \'${ssh_password}\' ssh -o 'StrictHostKeyChecking=no'  stage@46.209.8.3  && cd /home/stage/backend/ && docker login -u "sandbox"  -p "sandbox" https://nexus.sarmayexfinance.com && docker pull nexus.sarmayexfinance.com/ex-api:latest && docker stack deploy --with-registry-auth -c docker-compose.yml ex-api"
+      environment:
+        name: dev
+      tags:
+          - deploy
+#        url: https://stage.sarmayexfinance.com
+#      rules:
+#        - if: $CI_COMMIT_BRANCH == "dev"
