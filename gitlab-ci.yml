@@ -32,8 +32,8 @@ deploy:
         - apk add sshpass
         - apk add openssh
         - apk add lftp
-        - sshpass -p \'${ssh_password}\' ssh -o 'StrictHostKeyChecking=no' stage@46.209.8.3
-        - sshpass -p \'${ssh_password}\' ssh -o 'StrictHostKeyChecking=no'  stage@46.209.8.3  && cd /home/stage/backend/ && docker login -u "sandbox"  -p "sandbox" https://nexus.sarmayexfinance.com && docker pull nexus.sarmayexfinance.com/ex-api:latest && docker stack deploy --with-registry-auth -c docker-compose.yml ex-api"
+        - sshpass -p 't@uyM59bQ' ssh -o 'StrictHostKeyChecking=no' stage@46.209.8.3 'uptime;uname -a;df -h'
+        - sshpass -p 't@uyM59bQ' ssh -o 'StrictHostKeyChecking=no'  stage@46.209.8.3 ' ls -la && cd /home/stage/frontend && docker login -u "sandbox"  -p "sandbox" https://nexus.sarmayexfinance.com && docker pull nexus.sarmayexfinance.com/nx-site:latest && docker stack deploy --with-registry-auth -c docker-compose.yml nx-site '
       environment:
         name: dev
       tags:
@@ -41,3 +41,4 @@ deploy:
 #        url: https://stage.sarmayexfinance.com
 #      rules:
 #        - if: $CI_COMMIT_BRANCH == "dev"
+
